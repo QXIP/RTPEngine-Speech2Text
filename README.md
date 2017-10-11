@@ -1,4 +1,4 @@
-# rtpengine-stt-spooler
+# RTP:Engine-rec-spooler
 Simple RTPEngine Speech-to-Text Spooler using the [Bing Speech API](https://azure.microsoft.com/en-us/services/cognitive-services)
 
 ### Usage
