@@ -43,6 +43,8 @@ module.exports = {
 	    rcinfo.time_sec = Math.floor( datenow / 1000);
 	    rcinfo.time_usec = datenow - (rcinfo.time_sec*1000);
     }
+    // force sequence for split second sequences
+    rcinfo.time_usec++;
     if (debug) console.log(rcinfo);
     sendHEP3(msg, rcinfo);	
   },
