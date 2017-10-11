@@ -1,6 +1,6 @@
 <img src="https://avatars1.githubusercontent.com/u/956313?v=4&s=50">
 
-# RTP:Engine Speech to Text Spooler
+# RTP:Engine Speech-to-Text Spooler
 Simple RTPEngine Speech-to-Text Spooler using the [Bing Speech API](https://azure.microsoft.com/en-us/services/cognitive-services)
 
 ### Usage
