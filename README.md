@@ -25,7 +25,7 @@ Speech Recognition results can be streamed to **HOMER** or **HEPIC** using the *
 
 * Fill in the API and HEP Server details in ```config.js```
 * Run the HEP-enabled version ```nodejs speech2hep.js```
-* Watch HEP logs fly
+* Watch HEP logs fly out!
 ```
 U 172.18.0.2:52593 -> x.x.x.x:9060
 HEP3.%...................
@@ -36,6 +36,8 @@ Y.._...
 ..........d.....
 ..........BINGO.....'6f9db20deb1a9871-ce2fa1345463393b......Um well I got a right now I got this absence of argan oil um for shipping handling in handling Costa fried 9-9 sample of it and um if I want to.
 ```
+* Check your Session for Logs
+<img src="https://i.imgur.com/FT9lngi.gif">
 
 #### Todo
 * [ ] Use Proc buffer samples in real-time
