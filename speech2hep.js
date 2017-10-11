@@ -19,7 +19,7 @@ watcher
     .on('unlink', function(path) {console.log('File', path, 'has been removed');
 	   if(path.endsWith('.meta')){ 
 		var newpath = path.replace(/\.meta/i, '-mix.wav');
-		try { var xcid = path.match(/\/([^\/]+)\/?\.meta$/)[1]; } catch(e) { console.log(e); }
+		try { var xcid = path.match(/\/([^\/]+)\/?\.meta$/)[1].split('-')[0]; } catch(e) { console.log(e); }
 		// Get file timestamp, detection is delayed
 		var stats = fs.statSync(newpath);
 		var datenow = stats.mtime ? new Date(stats.mtime).getTime() : new Date().getTime();
@@ -52,7 +52,7 @@ watcher
 					      capturePass: 'SPEECH-TO-HEP',
 					      correlation_id: xcid
 					    },
-					      payload: e.DisplayText
+					      payload: 'TRANSCRIPTION LOG: '+e.DisplayText
 					  };
 				    hep_client.preHep(message);
 				    } catch(e) { console.log(e) }
