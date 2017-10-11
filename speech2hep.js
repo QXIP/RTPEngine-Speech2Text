@@ -25,40 +25,38 @@ watcher
 		var datenow = stats.mtime ? new Date(stats.mtime).getTime() : new Date().getTime();
 		var t_sec = Math.floor( datenow / 1000);
 		var u_sec = ( datenow - (t_sec*1000))*1000;
-
 		console.log('Meta Hit! Seeking Audio at: ',newpath);
-		console.log('CHECK!',hep_client,config);
 		socket.start((error, service) => {
 		  console.log('service started');
 		  service.on('recognition', (e) => {
 		    if (e.RecognitionStatus === 'Success') {
-          console.log('Response',e);
-          if (hep_client){
-            console.log('Sending HEP...');
-            try {
-            var message = {
-                    rcinfo: {
-                      type: 'HEP',
-                      version: 3,
-                      payload_type: 100,
-                      time_sec: t_sec,
-                      time_usec: u_sec,
-                      ip_family: 2,
-                      protocol: 17,
-                      proto_type: 100,
-                      srcIp: '127.0.0.1',
-                      dstIp: '127.0.0.1',
-                      srcPort: 0,
-                      dstPort: 0,
-                      captureId: 2999,
-                      capturePass: 'SPEECH-TO-HEP',
-                      correlation_id: xcid
-                    },
-                      payload: e.DisplayText
-                  };
-            hep_client.preHep(message);
-            } catch(e) { console.log(e) }
-          }
+				  console.log('Response',e);
+				  if (hep_client){
+				    console.log('Sending HEP...');
+				    try {
+				    var message = {
+					    rcinfo: {
+					      type: 'HEP',
+					      version: 3,
+					      payload_type: 100,
+					      time_sec: t_sec,
+					      time_usec: u_sec,
+					      ip_family: 2,
+					      protocol: 17,
+					      proto_type: 100,
+					      srcIp: '127.0.0.1',
+					      dstIp: '127.0.0.1',
+					      srcPort: 0,
+					      dstPort: 0,
+					      captureId: 2999,
+					      capturePass: 'SPEECH-TO-HEP',
+					      correlation_id: xcid
+					    },
+					      payload: e.DisplayText
+					  };
+				    hep_client.preHep(message);
+				    } catch(e) { console.log(e) }
+				  }
 		    }
 		  });
 
