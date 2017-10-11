@@ -39,7 +39,7 @@ Y.._...
 ..........BINGO.....'6f9db20deb1a9871-ce2fa1345463393b......Um well I got a right now I got this absence of argan oil um for shipping handling in handling Costa fried 9-9 sample of it and um if I want to.
 ```
 * Check your Session for Logs
-<img src="https://i.imgur.com/FT9lngi.gif">
+<img src="https://i.imgur.com/FT9lngi.gif" width="700px">
 
 #### Todo
 * [ ] Use Proc buffer samples in real-time
