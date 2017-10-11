@@ -17,16 +17,16 @@ const watcher = chokidar.watch('/recording', {ignored: /^\./, persistent: true }
     .on('add', function(path) {console.log('File', path, 'has been added');  })
     .on('unlink', function(path) {console.log('File', path, 'has been removed');
 	   if(path.endsWith('.meta')){ 
-		  var newpath = path.replace(/\.meta/i, '-mix.wav');
-		  console.log('Meta Hit! Seeking Audio at: ',newpath);
-      socket.start((error, service) => {
-        console.log('Speech service started');
-        service.on('recognition', (e) => {
-          if (e.RecognitionStatus === 'Success') console.log(e);
-        });
-        service.sendFile(newpath, function(e){ console.log(e);
-          setTimeout(function(){ fs.unlink(newpath); }, 1000);
-        });
-      });
+	      var newpath = path.replace(/\.meta/i, '-mix.wav');
+	      console.log('Meta Hit! Seeking Audio at: ',newpath);
+	      socket.start((error, service) => {
+		console.log('Speech service started');
+		service.on('recognition', (e) => {
+		  if (e.RecognitionStatus === 'Success') console.log(e);
+		});
+		service.sendFile(newpath, function(e){ console.log(e);
+		  setTimeout(function(){ fs.unlink(newpath); }, 1000);
+		});
+	      });
 	   }
-  })
+  });
