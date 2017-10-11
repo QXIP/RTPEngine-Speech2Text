@@ -1,10 +1,12 @@
-# RTP:Engine-rec-spooler
+<img src="https://avatars1.githubusercontent.com/u/956313?v=4&s=50">
+
+# RTP:Engine-Rec-Spooler
 Simple RTPEngine Speech-to-Text Spooler using the [Bing Speech API](https://azure.microsoft.com/en-us/services/cognitive-services)
 
 ### Usage
 This simple tool assumes a fully working RTPEngine WAV recorder setup and relies on its natural metadata removal pattern to pick, process and clear recording files. A valid Bing Speech-to-Text API key is also required for the demo to work as-is.
 
-### Output
+### Debug Usage
 ```
 nodejs index.js 
 File /recording/0827ab93e5636d54-7310c8bc193850b5-mix.wav has been added
@@ -20,7 +22,7 @@ File /recording/0827ab93e5636d54-7310c8bc193850b5-mix.wav has been removed
 
 -----------
 
-### HEP Example
+### HEP Usage
 Speech Recognition results can be streamed to **HOMER** or **HEPIC** using the **HEP** Type 100 container.
 
 * Fill in the API and HEP Server details in ```config.js```
