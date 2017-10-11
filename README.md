@@ -20,5 +20,5 @@ File /recording/0827ab93e5636d54-7310c8bc193850b5-mix.wav has been removed
 ```
 
 #### Todo
-* [ ] Use Proc buffers
-* [ ] Implement other Speech-to-Text options
+* [ ] Use Proc buffer samples in real-time
+* [ ] Integrate more Speech-to-Text APIs
