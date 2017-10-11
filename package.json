@@ -1,0 +1,13 @@
+{
+  "name": "rtpengine-stt-spooler",
+  "version": "1.0.0",
+  "description": "Simple STT Spooler for RTPEngine recordings",
+  "main": "index.js",
+  "author": {
+    "name": "Lorenzo Mangani"
+  },
+  "dependencies": {
+    "chokidar": "^4.6.2",
+    "ms-bing-speech-service": "^1.3.0",
+  }
+}
