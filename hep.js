@@ -44,7 +44,7 @@ module.exports = {
 	    rcinfo.time_usec = datenow - (rcinfo.time_sec*1000);
     }
     // force sequence for split second sequences
-    rcinfo.time_usec++;
+    rcinfo.time_usec = new Date().getTime() - (rcinfo.time_sec*1000) + 1;
     if (debug) console.log(rcinfo);
     sendHEP3(msg, rcinfo);	
   },
