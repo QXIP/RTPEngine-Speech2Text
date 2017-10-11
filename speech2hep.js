@@ -52,7 +52,7 @@ watcher
 					      capturePass: 'SPEECH-TO-HEP',
 					      correlation_id: xcid
 					    },
-					      payload: 'TRANSCRIPTION LOG: '+e.DisplayText
+					      payload: new Date()+': @SPEECH "'+e.DisplayText+'"'
 					  };
 				    hep_client.preHep(message);
 				    } catch(e) { console.log(e) }
