@@ -1,13 +1,14 @@
 {
-  "name": "rtpengine-stt-spooler",
+  "name": "rtpengine-speech2text",
   "version": "1.0.0",
-  "description": "Simple STT Spooler for RTPEngine recordings",
+  "description": "Simple Speech-to-Text Spooler for RTPEngine recordings",
   "main": "index.js",
   "author": {
     "name": "Lorenzo Mangani"
   },
   "dependencies": {
-    "chokidar": "^4.6.2",
-    "ms-bing-speech-service": "^1.3.0",
+    "chokidar": "4.6.2",
+    "ms-bing-speech-service": "1.3.0",
+    "hep-js" : "*"
   }
 }
