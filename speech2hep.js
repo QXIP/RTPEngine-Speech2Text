@@ -34,6 +34,9 @@ watcher
 				  if (hep_client){
 				    console.log('Sending HEP...');
 				    try {
+				    var payload = { Speech: e.DisplayText };
+				    	payload.timestamp = new Date();
+				    	payload.CallID = xcid;
 				    var message = {
 					    rcinfo: {
 					      type: 'HEP',
@@ -52,8 +55,8 @@ watcher
 					      capturePass: 'SPEECH-TO-HEP',
 					      correlation_id: xcid
 					    },
-					      payload: new Date()+': @SPEECH "'+e.DisplayText+'"'
-					  };
+					      payload: JSON.stringify(payload)
+				    };
 				    hep_client.preHep(message);
 				    } catch(e) { console.log(e) }
 				  }

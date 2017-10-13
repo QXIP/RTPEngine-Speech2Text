@@ -35,7 +35,10 @@ module.exports = {
     if (debug) console.log(msg);
     stats.rcvd++;
     if (!rcinfo.hep_id){
-      rcinfo.hep_id = config.HEP_ID;
+      rcinfo.hep_id = hep_id;
+    }
+    if (!rcinfo.hep_pass){
+      rcinfo.hep_pass = hep_pass;
     }
     if (!rcinfo.time_sec){
 	    var hrTime = process.hrtime();
