@@ -37,6 +37,10 @@ watcher
 				    var payload = { Speech: e.DisplayText };
 				    	payload.timestamp = new Date();
 				    	payload.CallID = xcid;
+				    if ((e.DisplayText.length - e.DisplayText.replace(RegExp('*'), '').length) > 1){
+					payload.profanity = true;
+				    }
+
 				    var message = {
 					    rcinfo: {
 					      type: 'HEP',
@@ -58,7 +62,7 @@ watcher
 					      payload: JSON.stringify(payload)
 				    };
 				    hep_client.preHep(message);
-				    } catch(e) { console.log(e) }
+				    } catch(e) { console.log(e); }
 				  }
 		    }
 		  });
@@ -69,7 +73,7 @@ watcher
 
 		});
 	   }
-    })
+    });
 
 var exit = false;
 process.on('SIGINT', function() {
@@ -82,6 +86,6 @@ process.on('SIGINT', function() {
     exit = true;
     setTimeout(function () {
       exit = false;
-    }, 2000)
+    }, 2000);
   }
 });
