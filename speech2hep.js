@@ -1,22 +1,20 @@
 const chokidar = require('chokidar');
 const fs = require('fs');
-const speechService = require('ms-bing-speech-service');
+const whisper = require('whisper-node');
 
 var config = require('./config.js');
 if (config.hep_config) {
-  console.log('Enabling HEP...');
   var hep_client = require('./hep.js');
   hep_client.init(config.hep_config);
-} 
+  console.log('HEP Client ready!');
+}
 
-const options = config.bing_options; 
-const socket = new speechService(options);
 const watcher = chokidar.watch('/recording', {ignored: /^\./, persistent: true });
 watcher
     .on('error', function(error) {console.error('Error happened', error);})
     .on('add', function(path) {console.log('File', path, 'has been added');  })
     // .on('change', function(path) {console.log('File', path, 'has been changed'); })
-    .on('unlink', function(path) {console.log('File', path, 'has been removed');
+    .on('unlink', async function(path) {console.log('File', path, 'has been removed');
 	   if(path.endsWith('.meta')){ 
 		var newpath = path.replace(/\.meta/i, '-mix.wav');
 		try { var xcid = path.match(/\/([^\/]+)\/?\.meta$/)[1].split('-')[0]; } catch(e) { console.log(e); }
@@ -26,15 +24,14 @@ watcher
 		var t_sec = Math.floor( datenow / 1000);
 		var u_sec = ( datenow - (t_sec*1000))*1000;
 		console.log('Meta Hit! Seeking Audio at: ',newpath);
-		socket.start((error, service) => {
-		  console.log('service started');
-		  service.on('recognition', (e) => {
-		    if (e.RecognitionStatus === 'Success') {
+
+		const transcript = await whisper(newpath);
+		    if (transcript) {
 				  console.log('Response',e);
 				  if (hep_client){
 				    console.log('Sending HEP...');
 				    try {
-				    var payload = { Speech: e.DisplayText };
+				    var payload = { Speech: transcript };
 				    	payload.timestamp = new Date();
 				    	payload.CallID = xcid;
 				    if ((e.DisplayText.length - e.DisplayText.replace(RegExp('*'), '').length) > 1){
@@ -65,13 +62,7 @@ watcher
 				    } catch(e) { console.log(e); }
 				  }
 		    }
-		  });
 
-		  service.sendFile(newpath, function(e){
-				setTimeout(function(){ fs.unlink(newpath); }, 1000);
-		  });
-
-		});
 	   }
     });
 
