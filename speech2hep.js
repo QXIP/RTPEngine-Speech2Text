@@ -31,12 +31,9 @@ watcher
 				  if (hep_client){
 				    console.log('Sending HEP...');
 				    try {
-				    var payload = { Speech: transcript };
+				    var payload = transcript;
 				    	payload.timestamp = new Date();
 				    	payload.CallID = xcid;
-				    if ((e.DisplayText.length - e.DisplayText.replace(RegExp('*'), '').length) > 1){
-					payload.profanity = true;
-				    }
 
 				    var message = {
 					    rcinfo: {
