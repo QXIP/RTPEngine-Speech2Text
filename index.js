@@ -13,6 +13,6 @@ const watcher = chokidar.watch('/recording', {ignored: /^\./, persistent: true }
 	      var newpath = path.replace(/\.meta/i, '-mix.wav');
 	      console.log('Meta Hit! Seeking Audio at: ',newpath);
 	      const transcript = await whisper(newpath);
-	      console.log('Meta Hit! Seeking Audio at: ',transcript);
+	      console.log('Meta Hit! Transcript: ',transcript.speech);
 	   }
   });
