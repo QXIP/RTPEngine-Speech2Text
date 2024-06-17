@@ -64,9 +64,9 @@ var getSocket = function (type) {
   if (undefined === socket && type === 'udp4') {
       socket = dgram.createSocket(type);
   } else if (type === 'tcp') {
-    socket = net.connect(_config_.HEP_PORT, _config_.HEP_SERVER)
+    socket = net.connect(hep_port, hep_server)
   } else if (type === 'tls') {
-  socket = tls.connect(_config_.HEP_PORT, _config_.HEP_SERVER)
+  socket = tls.connect(hep_port, hep_server)
   console.log('TLS Socket', socket)
 }
 

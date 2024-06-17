@@ -17,7 +17,7 @@ const options = {
 	}
   }
 console.log('Starting watcher', whisper)
-const watcher = chokidar.watch('/recording', {ignored: /^\./, persistent: true });
+const watcher = chokidar.watch(__dirname + '/recording', {ignored: /^\./, persistent: true });
 watcher
 .on('error', function(error) {console.error('Error happened', error);})
 .on('add', function(path) {console.log('File', path, 'has been added');  })
