@@ -1,8 +1,9 @@
 var config = {
   hep_config: {
-    debug: true,
-    HEP_SERVER: '127.0.0.1',
-    HEP_PORT: 9060
+    debug: process.env.DEBUG || false,
+    HEP_TRANS: process.env.HEP_TRANS || 'udp4',
+    HEP_SERVER: process.env.HEP_SERVER || '127.0.0.1',
+    HEP_PORT: process.env.HEP_PORT || 9060,
   },
   bing_options: {
     language: 'en-US',
