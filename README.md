@@ -11,7 +11,9 @@ This simple tool assumes a fully working RTPEngine WAV recorder setup and relies
 ### HEP Usage
 Speech Recognition results can be streamed to **HOMER** or **HEPIC** using the **HEP** Type 100 container.
 
-* Run the HEP-enabled version ```nodejs speech2hep.js```
+* Add your HEP settings to 'config.js'
+* Run the HEP-enabled version ```npm start```
+* Wait for RTP Calls to arrive
 * Watch HEP logs fly out!
 ```
 U 172.18.0.2:52593 -> x.x.x.x:9060
