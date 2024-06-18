@@ -1,10 +1,12 @@
 {
   "name": "rtpengine-speech2text",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Simple Speech-to-Text Whisper Spooler for RTPEngine recordings",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "transcribe_only": "node index.js",
+    "start": "node speech2hep.js"
+  },
   "author": {
     "name": "Lorenzo Mangani <lorenzo.mangani@gmail.com>"
   },
