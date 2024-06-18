@@ -26,7 +26,7 @@ if (config.hep_config) {
   console.log('HEP Client ready!');
 }
 
-const watcher = chokidar.watch(__dirname + '/recording', {ignored: /^\./, persistent: true });
+const watcher = chokidar.watch(config.rec_path, {ignored: /^\./, persistent: true });
 
 watcher
     .on('error', function(error) {
@@ -52,42 +52,44 @@ watcher
 			var u_sec = ( datenow - (t_sec*1000))*1000;
 			console.log('Meta Hit! Seeking Audio at: ', newpath);
 
-			const transcript = await whisper(newpath);
+			const transcript = await whisper(newpath, options);
 			if (transcript) {
-				if (hep_client){
-					console.log('Sending HEP...');
-					try {
-						var payload = transcript;
-							payload.timestamp = new Date();
-							payload.CallID = xcid;
-
-						var message = {
-							rcinfo: {
-								type: 'HEP',
-								version: 3,
-								payload_type: 100,
-								time_sec: t_sec,
-								time_usec: u_sec,
-								ip_family: 2,
-								protocol: 17,
-								proto_type: 100,
-								srcIp: '127.0.0.1',
-								dstIp: '127.0.0.1',
-								srcPort: 0,
-								dstPort: 0,
-								captureId: 2999,
-								capturePass: 'SPEECH-TO-HEP',
-								correlation_id: xcid
-							},
-								payload: JSON.stringify(payload)
-						};
-						hep_client.preHep(message);
-					} catch(e) { 
-						console.log(e); 
+				for (let index = 0; index < transcript.length; index++) {
+					const utterance = transcript[index];
+					if (hep_client){
+						console.log('Sending HEP...');
+						try {
+							var payload = utterance;
+								payload.timestamp = new Date();
+								payload.CallID = xcid;
+	
+							var message = {
+								rcinfo: {
+									type: 'HEP',
+									version: 3,
+									payload_type: 100,
+									time_sec: t_sec,
+									time_usec: u_sec,
+									ip_family: 2,
+									protocol: 17,
+									proto_type: 100,
+									srcIp: '127.0.0.1',
+									dstIp: '127.0.0.1',
+									srcPort: 0,
+									dstPort: 0,
+									captureId: 2999,
+									capturePass: 'SPEECH-TO-HEP',
+									correlation_id: xcid
+								},
+									payload: JSON.stringify(payload)
+							};
+							hep_client.preHep(message);
+						} catch(e) { 
+							console.log(e); 
+						}
 					}
 				}
 			}
-
 		}
     });
 
