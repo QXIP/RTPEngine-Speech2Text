@@ -41,7 +41,7 @@ watcher
 		if(path.endsWith('.meta')) { 
 			let pathArray = path.split('/')
 			let fileName = pathArray[pathArray.length - 1]
-			var newpath = filename.replace(/\.meta/i, '-mix.wav');
+			var newpath = fileName.replace(/\.meta/i, '-mix.wav');
 			newpath = config.rec_path + '/' + newpath
 			try { 
 				var xcid = path.match(/\/([^\/]+)\/?\.meta$/)[1].split('-')[0]; 
