@@ -1,5 +1,6 @@
 var config = {
   rec_path: process.env.REC_PATH || __dirname + '/recording',
+  meta_path: process.env.META_PATH || __dirname + '/meta',
   hep_config: {
     debug: process.env.DEBUG || false,
     HEP_TRANS: process.env.HEP_TRANS || 'udp4',

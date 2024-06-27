@@ -26,7 +26,7 @@ if (config.hep_config) {
   console.log('HEP Client ready!');
 }
 
-const watcher = chokidar.watch(config.rec_path, {ignored: /^\./, persistent: true });
+const watcher = chokidar.watch(config.meta_path, {ignored: /^\./, persistent: true });
 
 watcher
     .on('error', function(error) {
@@ -39,7 +39,10 @@ watcher
     .on('unlink', async function(path) {
 		console.log('File', path, 'has been removed');
 		if(path.endsWith('.meta')) { 
-			var newpath = path.replace(/\.meta/i, '-mix.wav');
+			let pathArray = path.split('/')
+			let fileName = pathArray[pathArray.length - 1]
+			var newpath = fileName.replace(/\.meta/i, '-mix.wav');
+			newpath = config.rec_path + '/' + newpath
 			try { 
 				var xcid = path.match(/\/([^\/]+)\/?\.meta$/)[1].split('-')[0]; 
 			} catch(e) { 
