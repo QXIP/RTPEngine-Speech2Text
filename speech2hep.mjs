@@ -36,11 +36,17 @@ async function callModel (path) {
         let pathArray = path.split('/')
         let fileName = pathArray[pathArray.length - 1]
         var newpath = fileName.replace(/\.meta/i, '-mix.wav');
+        newpath = process.env.REC_PATH + '/' + newpath
+        try { 
+            var xcid = path.match(/\/([^\/]+)\/?\.meta$/)[1].split('-')[0]; 
+        } catch(e) { 
+            console.log(e); 
+        }
+        console.log('Converted path to ./recording/', newpath)
+        console.log('Executing Model with:')
+        console.log('./node_modules/whisper-node/lib/whisper.cpp/main -ml 20 -sow -l auto -m ./node_modules/whisper-node/lib/whisper.cpp/models/ggml-base.en.bin -f ' + newpath)
+        cp.exec('./node_modules/whisper-node/lib/whisper.cpp/main -ml 20 -sow -l auto -m ./node_modules/whisper-node/lib/whisper.cpp/models/ggml-base.en.bin -f ' + newpath, handleModelResult)
     }
-    console.log('Converted path to ./recording/', newpath)
-    console.log('Executing Model with:')
-    console.log('./node_modules/whisper-node/lib/whisper.cpp/main -ml 20 -sow -l auto -m ./node_modules/whisper-node/lib/whisper.cpp/models/ggml-base.en.bin -f ./recording/' + newpath)
-    cp.exec('./node_modules/whisper-node/lib/whisper.cpp/main -ml 20 -sow -l auto -m ./node_modules/whisper-node/lib/whisper.cpp/models/ggml-base.en.bin -f ./recording/' + newpath, handleModelResult)
 }
 
 /**
