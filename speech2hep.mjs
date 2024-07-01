@@ -42,24 +42,37 @@ async function callModel (path) {
         } catch(e) { 
             console.log(e); 
         }
-        console.log('Converted path to ./recording/', newpath)
+        console.log('Converted path to ', newpath)
         console.log('Executing Model with:')
         console.log('./node_modules/whisper-node/lib/whisper.cpp/main -ml 20 -sow -l auto -m ./node_modules/whisper-node/lib/whisper.cpp/models/ggml-base.en.bin -f ' + newpath)
-        cp.exec('./node_modules/whisper-node/lib/whisper.cpp/main -ml 20 -sow -l auto -m ./node_modules/whisper-node/lib/whisper.cpp/models/ggml-base.en.bin -f ' + newpath, handleModelResult)
+        let model = cp.spawn('./node_modules/whisper-node/lib/whisper.cpp/main', ['-ml', '20', '-l', 'auto', '-m', './node_modules/whisper-node/lib/whisper.cpp/models/ggml-base.en.bin', '-sow', newpath])
+        model.stdout.on('data', handleReceiving)
+
+        model.stderr.on('data', (data) => {
+            console.error(`stderr: ${data}`);
+          })
+        
+        model.on('close', (code) => {
+            console.log(`child process exited with code ${code}`);
+            handleModelResult(receivedData)
+          });   
     }
 }
 
+var receivedData = ''
+var transcription = []
+
+async function handleReceiving (buffer) {
+    let received = buffer.toString()
+    console.log('received: ', received)
+    receivedData = receivedData + received
+}
 /**
  * Handle the result of the model
- * @param {string} err 
- * @param {string} stdout 
- * @param {string} stderr 
+ * @param {Buffer} buffer
  */
-async function handleModelResult (err, stdout, stderr) {
-    console.log('model returned ', err, stdout, stderr)
-    console.log('typeof stdout')
-    console.log(stdout.split(os.EOL))
-    let transcription = stdout.split(os.EOL)
+async function handleModelResult (data) {
+    transcription = data.split(os.EOL)
     for (let i = 0; i < transcription.length; i++) {
         const el = transcription[i];
         if (el.length > 0) {
