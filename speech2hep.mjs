@@ -45,7 +45,10 @@ async function callModel (path) {
         console.log('Converted path to ', newpath)
         console.log('Executing Model with:')
         console.log('./node_modules/whisper-node/lib/whisper.cpp/main -ml 20 -sow -l auto -m ./node_modules/whisper-node/lib/whisper.cpp/models/ggml-base.en.bin -f ' + newpath)
-        let model = cp.spawn('./node_modules/whisper-node/lib/whisper.cpp/main', ['-ml', '20', '-l', 'auto', '-m', './node_modules/whisper-node/lib/whisper.cpp/models/ggml-base.en.bin', '-sow', newpath])
+        let model = cp.spawn('./node_modules/whisper-node/lib/whisper.cpp/main', ['-ml', '20', '-l', 'auto', '-m', './node_modules/whisper-node/lib/whisper.cpp/models/ggml-base.en.bin', '-sow', newpath], {
+            shell: true,
+            timeout: 180000,
+        })
         model.stdout.on('data', handleReceiving)
 
         model.stderr.on('data', (data) => {
