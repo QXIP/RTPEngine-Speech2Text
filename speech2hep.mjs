@@ -140,8 +140,7 @@ async function handleReceiving (callid, timeInfo, buffer) {
                 let turn = false
                 if (el.match(/\[SPEAKER_TURN\]?/)) {
                     turn = true
-                    direction = direction == 0 ? 1 : 0
-                    calls.set(callid, direction)
+                    calls.set(callid, direction == 0 ? 1 : 0)
                 } else { 
                     turn = false
                 }
