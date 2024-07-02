@@ -16,6 +16,7 @@ const HEP_PORT = process.env.HEP_PORT || 9060
 const HEP_PASS = process.env.HEP_PASS || '123'
 const HEP_ID = process.env.HEP_ID || 44567
 const timeout = process.env.TIMEOUT || 8000
+const offset = process.env.OFFSET || 1000
 const debug = process.env.DEBUG || false
 
 /**
@@ -67,8 +68,8 @@ async function handleEvent (err, ev) {
  * @param {string} path 
  */
 async function callModel (path) {
-    console.log('Triggered Model call from file: ', path)
-    if(path.endsWith('.meta')) { 
+    if (debug) console.log('Triggered Model call from file: ', path)
+    if (path.endsWith('.meta')) { 
         let pathArray = path.split('/')
         let fileName = pathArray[pathArray.length - 1]
         var newpath = fileName.replace(/\.meta/i, '-mix.wav');
@@ -81,9 +82,13 @@ async function callModel (path) {
             console.log('Caught fileName error: ', err); 
         }
         try {
+            /* Get creation time (aka when RTPEngine started writing wav file) */
             var stats = fs.statSync(newpath);
             var datenow = stats.mtime ? new Date(stats.mtime).getTime() : new Date().getTime();
+            /* Go backwards to compensate for timeout */
             datenow -= timeout
+            /* Go backwards per defined offset, helps show logs closer to the actual time they occured */
+            datenow -= offset
             var t_sec = Math.floor( datenow / 1000);
             var u_sec = ( datenow - (t_sec*1000))*1000;
         } catch (err) {
@@ -91,13 +96,14 @@ async function callModel (path) {
         }
         
         if (debug) console.log('Looking for Audio File: ', newpath)
-        console.log('Executing Model on file with cmd:')
+        console.log('Executing Model on file:')
         /* Wait for a period, as RTPEngine may not have finished writing the file */
         await new Promise((resolve, reject)=>{
             setTimeout(resolve, timeout)
         })
         /* Print command for confirmation */
-        console.log('./node_modules/whisper-node/lib/whisper.cpp/main -pp -tdrz -l auto -m ./node_modules/whisper-node/lib/whisper.cpp/models/ggml-small.en-tdrz.bin -f ' + newpath)
+        if (debug) console.log('./node_modules/whisper-node/lib/whisper.cpp/main -pp -tdrz -l auto -m ./node_modules/whisper-node/lib/whisper.cpp/models/ggml-small.en-tdrz.bin -f ' + newpath)
+        /* Spawn Model Process to process given audio file */
         let model = cp.spawn('./node_modules/whisper-node/lib/whisper.cpp/main', ['-l', 'auto', '-m', './node_modules/whisper-node/lib/whisper.cpp/models/ggml-small.en-tdrz.bin', '-pp', '-tdrz', newpath], {
             shell: true,
             timeout: 180000,
@@ -109,7 +115,7 @@ async function callModel (path) {
           })
         
         model.on('close', (code) => {
-            console.log(`Model process closed with code: ${code}`);
+            if (debug) console.log(`Model process closed with code: ${code}`);
             handleModelResult(callid)
           });   
     }
@@ -124,31 +130,36 @@ async function callModel (path) {
 async function handleReceiving (callid, timeInfo, buffer) {
     let received = buffer.toString()
     let direction = 0
-    if (calls.has(callid)) {
-        direction = calls.get(callid)
-    } else {
-        calls.set(callid, 0)
-    }
     if (received.length > 0) {
         let utterArray = received.split(os.EOL)
         for (let i = 0; i < utterArray.length; i++) {
             const el = utterArray[i];
             if (el.length > 1) {
                 if (debug) console.log('Processing :', el)
+                /* determine direction */
+                if (calls.has(callid)) {
+                    direction = calls.get(callid)
+                } else {
+                    calls.set(callid, 0)
+                }
+                /* Parse elements */
                 let timeUtterance = el.match(/[0-9]*:[0-9]*:[0-9]*.[0-9]*/)[0]
                 let text = el.match(/\](?<text>.*) (\[SPEAKER_TURN\])*/).groups.text
                 let turn = false
+                /* Set next direction if speaker change detected */
                 if (el.match(/\[SPEAKER_TURN\]?/)) {
                     turn = true
                     calls.set(callid, direction == 0 ? 1 : 0)
                 } else { 
                     turn = false
                 }
+                /* Get time stamp */
                 let diff = getSeconds(timeUtterance)
                 timeInfo.datenow += diff * 1000
                 timeInfo.t_sec = Math.floor( timeInfo.datenow / 1000);
                 timeInfo.u_sec = ( timeInfo.datenow - (timeInfo.t_sec*1000))*1000;
                 if (debug) console.log('Sending :', text)
+                /* Send to HEP */
                 sendHEP(text.trim(), callid, timeInfo, direction)
             }
 
@@ -165,19 +176,13 @@ function getSeconds (timestampString) {
     let total = 0
 
     let hours = Number(timestampString.slice(0, 2))
-    console.log('hours:', hours)
     total += hours * 60 * 60 
-    console.log('total', total)
 
     let minutes = Number(timestampString.slice(3, 5))
-    console.log('minutes', minutes)
     total += minutes * 60
-    console.log('total', total)
 
     let seconds = Number(timestampString.slice(6, 8))
-    console.log('seconds', seconds)
     total += seconds 
-    console.log('total', total)
     // ignore micros for now
     return total
 }
