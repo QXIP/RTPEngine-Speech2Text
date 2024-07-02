@@ -204,15 +204,15 @@ async function handleModelResult (callid) {
 async function sendHEP (text, callid, timeInfo, direction) {
     try {
         let payload = text
-        let srcPort = 0
-        let dstPort = 1
+        let srcIP = '127.0.0.1'
+        let dstIP = '127.0.0.2'
 
         if (direction == 0) {
-            srcPort = 0
-            dstPort = 1
+            srcIP = '127.0.0.1'
+            dstIP = '127.0.0.2'
         } else {
-            srcPort = 1
-            dstPort = 0
+            srcIP = '127.0.0.2'
+            dstIP = '127.0.0.1'
         }
         var message = {
             rcinfo: {
@@ -224,10 +224,10 @@ async function sendHEP (text, callid, timeInfo, direction) {
                 ip_family: 2,
                 protocol: 17,
                 proto_type: 100,
-                srcIp: '127.0.0.1',
-                dstIp: '127.0.0.1',
-                srcPort: srcPort,
-                dstPort: dstPort,
+                srcIp: srcIP,
+                dstIp: dstIP,
+                srcPort: 0,
+                dstPort: 0,
                 captureId: HEP_ID,
                 capturePass: 'SPEECH-TO-HEP',
                 correlation_id: callid
