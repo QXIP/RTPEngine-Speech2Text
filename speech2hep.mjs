@@ -113,11 +113,11 @@ async function callModel (path) {
         model.stdout.on('data', handleReceiving.bind(null, callid, {datenow, t_sec, u_sec}))
 
         model.stderr.on('data', (data) => {
-            if (debug) console.log(`MODEL stderr Stream: ${data}`);
+            console.log(`MODEL stderr Stream: ${data}`);
           })
         
         model.on('close', (code) => {
-            if (debug) console.log(`Model process closed with code: ${code}`);
+            console.log(`Model process closed with code: ${code}`);
             handleModelResult(callid)
           });   
     }
