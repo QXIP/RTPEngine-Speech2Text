@@ -146,7 +146,7 @@ async function handleReceiving (callid, timeInfo, buffer) {
                     turn = false
                 }
                 let diff = getSeconds(timeUtterance)
-                timeInfo.datenow += diff
+                timeInfo.datenow += diff * 1000
                 timeInfo.t_sec = Math.floor( timeInfo.datenow / 1000);
                 timeInfo.u_sec = ( timeInfo.datenow - (timeInfo.t_sec*1000))*1000;
                 if (debug) console.log('Sending :', text)
