@@ -47,17 +47,19 @@ async function handleEvent (err, ev) {
 
     for (let i = 0; i < ev.length; i++) {
         const eventItem = ev[i];
-        if (debug) console.log(`Found ${eventItem.path} has been ${eventItem.type}d`)
+        console.log(`Found ${eventItem.path} has been ${eventItem.type}d`)
 
         if (eventItem.type == 'create') {
             if (eventItem.path.match(/.*\.meta/)) {
                 let callid = eventItem.path.match(/[0-9]+-[0-9A-Za-z%\.]*/)[0];
                 callid = callid.replace(/\%40/i, '@')
+                console.log(`Found ${eventItem.path} has been ${eventItem.type}d`)
                 if (debug) console.log('New call detected with callid: ', callid)
             }
         }
 
         if (eventItem.type == 'delete') {
+            console.log(`Found ${eventItem.path} has been ${eventItem.type}d`)
             callModel(eventItem.path)
         }
     }
