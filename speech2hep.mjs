@@ -50,7 +50,7 @@ async function handleEvent (err, ev) {
 
         if (eventItem.type == 'create') {
             if (eventItem.path.match(/.*\.meta/)) {
-                let callid = eventItem.path.match(/[0-9]+-[0-9A-Za-z%\.]*[^.meta]/)[0];
+                let callid = eventItem.path.match(/[0-9]+-[0-9A-Za-z%\.]*/)[0];
                 callid = callid.replace(/\%40/i, '@')
                 if (debug) console.log('New call detected with callid: ', callid)
             }
