@@ -276,7 +276,7 @@ async function sendHEP (msg, timeInfo, callInfo) {
                 dstPort: 0,
                 captureId: HEP_ID,
                 capturePass: 'SPEECH-TO-HEP',
-                correlation_id: callid
+                correlation_id: callInfo.callid
             },
                 payload: JSON.stringify(payload)
         };
