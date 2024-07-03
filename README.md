@@ -11,11 +11,9 @@ This simple tool assumes a fully working RTPEngine WAV recorder setup and relies
 ### HEP Usage
 Speech Recognition results can be streamed to **HOMER** or **HEPIC** using the **HEP** Type 100 container.
 
-* Add your HEP settings to `config.js`
-* Run the HEP-enabled version
 
 ```bash
-REC_PATH=/path/to/RTPEngine/recording HEP_TRANS='udp4' HEP_SERVER='capture.homer.com' HEP_PORT=9060 npm run start
+OFFSET=5000 META_PATH=/var/spool/rtpengine REC_PATH=/path/to/RTPEngine/recording HEP_TRANS='udp4' HEP_SERVER='capture.homer.com' HEP_PORT=9060 node speech2hep.mjs
 ```
 
 * Wait for RTP traffic
