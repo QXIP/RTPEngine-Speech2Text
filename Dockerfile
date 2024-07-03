@@ -9,4 +9,4 @@ RUN ./download-ggml-model.sh small.en-tdrz
 WORKDIR /app/node_modules/whisper-node/lib/whisper.cpp/
 RUN make
 WORKDIR /app
-CMD ["nodejs", "speech2hep.js"]
+CMD ["nodejs", "sentiment2hep.mjs"]

@@ -20,7 +20,7 @@ const HEP_PORT = process.env.HEP_PORT || 9060
 const HEP_PASS = process.env.HEP_PASS || '123'
 const HEP_ID = process.env.HEP_ID || 44567
 const sentimentEnabled = process.env.SENTIMENT || 'false'
-const timeout = process.env.TIMEOUT || 8000
+const timeout = process.env.TIMEOUT || 10000
 const offset = process.env.OFFSET || 1000
 const debug = process.env.DEBUG || false
 
@@ -58,13 +58,26 @@ async function handleEvent (err, ev) {
             if (eventItem.path.match(/.*\.meta/)) {
                 let callid = eventItem.path.match(/[0-9]+-[0-9A-Za-z%\.]*/)[0];
                 callid = callid.replace(/\%40/i, '@')
-                console.log(`Found ${eventItem.path} has been ${eventItem.type}d`)
-                if (debug) console.log('New call detected with callid: ', callid)
+                console.log(`Detected file for callid: ${callid}`)
+            }
+        }
+
+        if (eventItem.type == 'update') {
+            if (eventItem.path.match(/.*\.meta/)) {
+                let content = fs.readFileSync(eventItem.path, 'utf-8')
+                let sdpCheck = content.match(/sdp/i)
+                if (sdpCheck) {
+                    /* processing file */
+                    let callid = content.match(/(?<callid>[0-9\-]+@[0-9\.]+)/).groups.callid
+                    let srcIP = content.match(/o=.*IP4 (?<srcIP>[0-9\.]+)/).groups.srcIP
+                    let dstIP = content.match(/c=.*IP4 (?<dstIP>[0-9\.]+)/).groups.dstIP
+                    console.log(`Detected callid: ${callid}, srcIP: ${srcIP}, dstIP: ${dstIP}, setting direction to 0`)
+                    calls.set(callid, {callid, srcIP, dstIP, direction: 0})
+                }
             }
         }
 
         if (eventItem.type == 'delete') {
-            console.log(`Found ${eventItem.path} has been ${eventItem.type}d`)
             callModel(eventItem.path)
         }
     }
@@ -136,7 +149,7 @@ async function callModel (path) {
  */
 async function handleReceiving (callid, timeInfo, buffer) {
     let received = buffer.toString()
-    let direction = 0
+    let callInfo = {}
     if (received.length > 0) {
         let utterArray = received.split(os.EOL)
         for (let i = 0; i < utterArray.length; i++) {
@@ -145,9 +158,14 @@ async function handleReceiving (callid, timeInfo, buffer) {
                 if (debug) console.log('Processing :', el)
                 /* determine direction */
                 if (calls.has(callid)) {
-                    direction = calls.get(callid)
+                    callInfo = calls.get(callid)
                 } else {
-                    calls.set(callid, 0)
+                    console.log(`Meta file for ${callid} did not process correctly before transcription`)
+                    let srcIP = '127.0.0.1'
+                    let dstIP = '127.0.0.2'
+                    console.log(`Detected callid: ${callid}, srcIP: ${srcIP}, dstIP: ${dstIP}, setting direction to 0`)
+                    callInfo = {callid, srcIP, dstIP, direction: 0}
+                    calls.set(callid, callInfo)
                 }
                 /* Parse elements */
                 let timeUtterance = el.match(/[0-9]*:[0-9]*:[0-9]*.[0-9]*/)[0]
@@ -156,7 +174,8 @@ async function handleReceiving (callid, timeInfo, buffer) {
                 /* Set next direction if speaker change detected */
                 if (el.match(/\[SPEAKER_TURN\]?/)) {
                     turn = true
-                    calls.set(callid, direction == 0 ? 1 : 0)
+                    callInfo.direction = callInfo.direction == 0 ? 1 : 0
+                    calls.set(callid, callInfo)
                 } else { 
                     turn = false
                 }
@@ -167,12 +186,18 @@ async function handleReceiving (callid, timeInfo, buffer) {
                 timeInfo.u_sec = ( timeInfo.datenow - (timeInfo.t_sec*1000))*1000;
                 if (debug) console.log('Sending :', text)
                 /* Send to HEP */
-                sendHEP(text.trim(), callid, timeInfo, direction)
-
                 if (sentimentEnabled) {
-                    let test = sentiment.analyze(text.trim())
-                    if (debug) console.log(`RESULT:`, test)
-                    sendHEP(test, callid, timeInfo, direction)
+                    let payload = sentiment.analyze(text.trim())
+                    payload.type = 'transcription'
+                    payload.transcription = text.trim()
+                    if (debug) console.log(`RESULT:`, payload)
+                    sendHEP(payload, timeInfo, callInfo)
+                } else {
+                    let payload = {
+                        type: 'transcription',
+                        transcription: text.trim()
+                    }
+                    sendHEP(payload, timeInfo, callInfo)
                 }
             }
 
@@ -213,23 +238,22 @@ async function handleModelResult (callid) {
 
 /**
  * Prepare and send HEP packet
- * @param {string} text Transcribed words
- * @param {string} callid Used for correlation to SIP signalling
+ * @param {object} msg Payload for HEP
  * @param {timeInfo} timeInfo 
- * @param {integer} direction Speaker directionality (e.g. 0|1 )
+ * @param {{callid: string, srcIP: string, dstIP: string, direction: integer}} callInfo
  */
-async function sendHEP (text, callid, timeInfo, direction) {
+async function sendHEP (msg, timeInfo, callInfo) {
     try {
-        let payload = text
+        let payload = msg
         let srcIP = '127.0.0.1'
         let dstIP = '127.0.0.2'
 
-        if (direction == 0) {
-            srcIP = '127.0.0.1'
-            dstIP = '127.0.0.2'
+        if (callInfo.direction == 0) {
+            srcIP = callInfo.dstIP
+            dstIP = callInfo.srcIP
         } else {
-            srcIP = '127.0.0.2'
-            dstIP = '127.0.0.1'
+            srcIP = callInfo.srcIP
+            dstIP = callInfo.dstIP
         }
         var message = {
             rcinfo: {
