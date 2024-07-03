@@ -75,7 +75,8 @@ async function handleEvent (err, ev) {
                         console.log(`Detected callid: ${callid}, srcIP: ${srcIP}, dstIP: ${dstIP}, setting direction to 0`)
                         calls.set(callid, {callid, srcIP, dstIP, direction: 0})
                     } catch (err) {
-                        console.log('Caught Meta Parse error: ', err)
+                        /* Swallow error in production mode */
+                        if (debug) console.log('Caught Meta Parse error: ', err)
                     }
                 }
             }
