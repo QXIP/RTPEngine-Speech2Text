@@ -1,6 +1,6 @@
 FROM node:20
-ENV REC_PATH /recording
-ENV META_PATH /meta
+ENV REC_PATH=/recording
+ENV META_PATH=/meta
 COPY . /app
 WORKDIR /app
 RUN  npm install
