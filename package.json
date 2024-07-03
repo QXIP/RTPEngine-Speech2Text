@@ -1,6 +1,6 @@
 {
   "name": "rtpengine-speech2text",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Simple Speech-to-Text Whisper Spooler for RTPEngine recordings",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "name": "Lorenzo Mangani <lorenzo.mangani@gmail.com>"
   },
   "dependencies": {
-    "chokidar": "*",
+    "@parcel/watcher": "^2.4.1",
     "hep-js": "*",
     "whisper-node": "^1.1.1"
   }

@@ -5,9 +5,8 @@ COPY . /app
 WORKDIR /app
 RUN  npm install
 WORKDIR /app/node_modules/whisper-node/lib/whisper.cpp/models
-RUN ./download-ggml-model.sh base.en
+RUN ./download-ggml-model.sh small.en-tdrz
 WORKDIR /app/node_modules/whisper-node/lib/whisper.cpp/
 RUN make
 WORKDIR /app
-RUN npx whisper-node download
 CMD ["nodejs", "speech2hep.js"]
