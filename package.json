@@ -13,6 +13,7 @@
   "dependencies": {
     "@parcel/watcher": "^2.4.1",
     "hep-js": "*",
+    "sentiment": "^5.0.2",
     "whisper-node": "^1.1.1"
   }
 }
