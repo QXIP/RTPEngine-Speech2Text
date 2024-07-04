@@ -1,33 +1,43 @@
 <img src="https://avatars1.githubusercontent.com/u/956313?v=4&s=50">
 
 # RTP:Engine Speech-to-Text Spooler
-Simple RTPEngine Speech-to-Text Spooler using the [Bing Speech API](https://azure.microsoft.com/en-us/services/cognitive-services)
+Simple RTPEngine Speech-to-Text Spooler using Whisper on CPU(s)
 
 ### Usage
-This simple tool assumes a fully working RTPEngine WAV recorder setup and relies on its natural metadata removal pattern to pick, process and clear recording files. A valid Bing Speech-to-Text API key is also required for the demo to work as-is.
-
-### Debug Usage
-```
-nodejs index.js 
-File /recording/0827ab93e5636d54-7310c8bc193850b5-mix.wav has been added
-File /recording/0827ab93e5636d54-7310c8bc193850b5.meta has been removed
-Meta Hit! Seeking Audio at:  /recording/0827ab93e5636d54-7310c8bc193850b5-mix.wav
-service started
-{ RecognitionStatus: 'Success',
-  DisplayText: 'You are currently the only person in this conference I\'ll be assisting you with your increase today please be informed that this call is being recorded and monitored.',
-  Offset: 1800000,
-  Duration: 97700000 }
-File /recording/0827ab93e5636d54-7310c8bc193850b5-mix.wav has been removed
-```
+This simple tool assumes a fully working RTPEngine WAV recorder setup and relies on its natural metadata removal pattern to pick, process and clear recording files.
 
 -----------
 
 ### HEP Usage
 Speech Recognition results can be streamed to **HOMER** or **HEPIC** using the **HEP** Type 100 container.
 
-* Fill in the API and HEP Server details in ```config.js```
-* Run the HEP-enabled version ```nodejs speech2hep.js```
+Both transcription and sentiment analysis is available. Transcription is always on, while sentiment analysis is opt-in via ENV var.
+
+Below is an overview of the defaults and ENV vars
+
+```js
+/**
+ * Environment Variables
+ */
+const HEP_SERVER = process.env.HEP_SERVER || '127.0.0.1'
+const HEP_TRANS = process.env.HEP_TRANS || 'udp4'
+const HEP_PORT = process.env.HEP_PORT || 9060
+const HEP_PASS = process.env.HEP_PASS || '123'
+const HEP_ID = process.env.HEP_ID || 44567
+const sentimentEnabled = process.env.SENTIMENT || 'false'
+const timeout = process.env.TIMEOUT || 8000
+const offset = process.env.OFFSET || 1000
+const debug = process.env.DEBUG || false
+```
+
+
+```bash
+OFFSET=5000 META_PATH=/var/spool/rtpengine REC_PATH=/path/to/RTPEngine/recording_dir HEP_TRANS='udp4' HEP_SERVER='capture.homer.com' HEP_PORT=9060 node sentiment2hep.mjs
+```
+
+* Wait for RTP traffic
 * Watch HEP logs fly out!
+
 ```
 U 172.18.0.2:52593 -> x.x.x.x:9060
 HEP3.%...................
@@ -41,6 +51,3 @@ Y.._...
 * Check your Session for Logs
 ![image](https://user-images.githubusercontent.com/1423657/31454437-b896f4e6-aeb5-11e7-8535-5d8069e0ef86.png)
 
-#### Todo
-* [ ] Use Proc buffer samples in real-time
-* [ ] Integrate more Speech-to-Text APIs

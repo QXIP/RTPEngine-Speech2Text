@@ -1,14 +1,19 @@
 {
   "name": "rtpengine-speech2text",
-  "version": "1.0.0",
-  "description": "Simple Speech-to-Text Spooler for RTPEngine recordings",
+  "version": "1.2.2",
+  "description": "Simple Speech-to-Text Whisper Spooler for RTPEngine recordings",
   "main": "index.js",
+  "scripts": {
+    "transcribe_only": "node index.js",
+    "start": "node speech2hep.js"
+  },
   "author": {
-    "name": "Lorenzo Mangani"
+    "name": "Lorenzo Mangani <lorenzo.mangani@gmail.com>"
   },
   "dependencies": {
-    "chokidar": "*",
-    "ms-bing-speech-service": "1.3.0",
-    "hep-js" : "*"
+    "@parcel/watcher": "^2.4.1",
+    "hep-js": "*",
+    "sentiment": "^5.0.2",
+    "whisper-node": "^1.1.1"
   }
 }
