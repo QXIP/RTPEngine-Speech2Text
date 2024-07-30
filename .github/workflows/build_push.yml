@@ -1,0 +1,80 @@
+name: 'Build and push container (GHCR / Dockerhub)'
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      TAG_NAME:
+        description: 'Release Version Tag (0.0.0)'
+        required: true
+jobs:
+  node:
+    name: 'Build & Publish Container'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.1
+        with:
+          ref: ${{ github.ref }}
+      - name: Update Package to Release version
+        uses: technote-space/package-version-check-action@v1.9.3
+      - name: Check Docker secret presence
+        id: checkdocker
+        shell: bash
+        run: |
+          if [ "$SECRET" == "" ]; then
+            echo "secretspresent=false" >> $GITHUB_OUTPUT
+          else
+            echo "secretspresent=true" >> $GITHUB_OUTPUT
+          fi
+        env:
+          SECRET: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Set up Docker QEMU
+        if: ${{ steps.checkdocker.outputs.secretspresent }}
+        uses: docker/setup-qemu-action@v3.0.0
+        with:
+           platforms: amd64, arm64
+      - name: Set up Docker Buildx
+        if: ${{ steps.checkdocker.outputs.secretspresent }}
+        uses: docker/setup-buildx-action@v3.0.0
+        
+      - name: Login to DockerHub
+        if: ${{ steps.checkdocker.outputs.secretspresent }}
+        uses: docker/login-action@v3.0.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}  
+      - name: Build and push to Docker Hub
+        if: ${{ steps.checkdocker.outputs.secretspresent }}
+        uses: docker/build-push-action@v5.0.0
+        with:
+          platforms: linux/amd64, linux/arm64
+          push: true
+          tags: |
+            qxip/speech2hep:latest
+            qxip/speech2hep:${{ github.event.inputs.TAG_NAME || github.event.release.tag_name }}
+            qxip/speech2hep:latest
+            qxip/speech2hep:${{ github.event.inputs.TAG_NAME || github.event.release.tag_name }}
+          labels: |
+            dev.speech2hep.image.title=speech2hep
+            dev.speech2hep.image.type=nodejs
+            dev.speech2hep.image.version={{github.event.inputs.TAG_NAME || github.event.release.tag_name }}
+      - name: Log in to the GHCR registry
+        uses: docker/login-action@v3.0.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push to GHCR
+        uses: docker/build-push-action@v5.0.0
+        with:
+          platforms: linux/amd64, linux/arm64
+          file: ./Dockerfile
+          push: true
+          tags: |
+             ghcr.io/qxip/speech2hep:latest
+             ghcr.io/qxip/speech2hep:${{ github.event.inputs.TAG_NAME || github.event.release.tag_name }}
+          labels: |
+            dev.speech2hep.image.title=speech2hep
+            dev.speech2hep.image.type=nodejs
+            dev.speech2hep.image.version={{github.event.inputs.TAG_NAME || github.event.release.tag_name }}
