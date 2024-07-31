@@ -8,6 +8,11 @@ on:
       TAG_NAME:
         description: 'Release Version Tag (0.0.0)'
         required: true
+
+permissions:
+  actions: write
+  packages: write
+
 jobs:
   node:
     name: 'Build & Publish Container'
