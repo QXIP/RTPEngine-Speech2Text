@@ -8,7 +8,6 @@ on:
       TAG_NAME:
         description: 'Release Version Tag (0.0.0)'
         required: true
-
 permissions:
   actions: write
   packages: write
@@ -27,7 +26,7 @@ jobs:
       - name: Log in to the Container registry
         uses: docker/login-action@v3.1.0
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
