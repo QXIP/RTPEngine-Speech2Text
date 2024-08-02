@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "transcribe_only": "node index.js",
-    "start": "node speech2hep.js"
+    "start": "node sentiment2hep.mjs"
   },
   "author": {
     "name": "Lorenzo Mangani <lorenzo.mangani@gmail.com>"
