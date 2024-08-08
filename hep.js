@@ -67,7 +67,21 @@ var getSocket = function (type) {
     socket = net.connect(hep_port, hep_server)
   } else if (type === 'tls') {
   socket = tls.connect(hep_port, hep_server)
-  console.log('TLS Socket', socket)
+  let ping = HEPjs.encapsulate('HEPPING', {
+    type: 'HEP',
+    version: 3,
+    payload_type: 0,
+    captureId: 2001,
+    capturePass: hep_pass,
+    ip_family: 2,
+    protocol: 17,
+    proto_type: 0,
+  })
+  socket.write(ping, function(err) {
+    if(err){
+      if(debug) console.log('tcp socket err on ping: ', err);
+    }
+  })
 }
 
   var socketErrorHandler = (err)=>{
